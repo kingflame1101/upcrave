@@ -1,0 +1,103 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+export default function App() {
+  const [craving, setCraving] = useState("");
+  const [goal, setGoal] = useState("low-carb");
+  const [recipes, setRecipes] = useState([]);
+  const [view, setView] = useState("input");
+
+  const handleGenerate = () => {
+    const fakeRecipes = [
+      {
+        title: "Zucchini Nachos",
+        ingredients: ["Zucchini slices", "Cheddar cheese", "Salsa", "Avocado"],
+        steps: ["Slice zucchini and roast for 10 min", "Top with cheese and broil", "Add salsa and avocado"],
+      },
+      {
+        title: "Cauliflower Fries",
+        ingredients: ["Cauliflower", "Egg", "Almond flour", "Parmesan"],
+        steps: ["Grate cauliflower", "Mix with egg and flour", "Shape into fries and bake"],
+      },
+    ];
+    setRecipes(fakeRecipes);
+    setView("results");
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-4 space-y-6">
+      <h1 className="text-3xl font-bold text-center">Healthy Craving Converter</h1>
+
+      <Tabs defaultValue="input" className="w-full">
+        <TabsList className="grid grid-cols-2">
+          <TabsTrigger value="input">Craving Input</TabsTrigger>
+          <TabsTrigger value="plan">Meal Plan</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="input">
+          {view === "input" && (
+            <Card>
+              <CardContent className="space-y-4 pt-4">
+                <Input
+                  placeholder="What are you craving? (e.g. cheesy fries)"
+                  value={craving}
+                  onChange={(e) => setCraving(e.target.value)}
+                />
+                <select
+                  className="w-full border rounded p-2"
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                >
+                  <option value="low-carb">Low-Carb</option>
+                  <option value="high-protein">High-Protein</option>
+                  <option value="weight-loss">Weight Loss</option>
+                  <option value="vegetarian">Vegetarian</option>
+                </select>
+                <Button onClick={handleGenerate}>Find Healthy Recipe</Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {view === "results" && (
+            <div className="space-y-4">
+              {recipes.map((recipe, i) => (
+                <Card key={i}>
+                  <CardContent className="space-y-2 pt-4">
+                    <h2 className="text-xl font-semibold">{recipe.title}</h2>
+                    <p className="text-sm font-bold">Ingredients:</p>
+                    <ul className="list-disc list-inside text-sm">
+                      {recipe.ingredients.map((item, j) => (
+                        <li key={j}>{item}</li>
+                      ))}
+                    </ul>
+                    <p className="text-sm font-bold">Steps:</p>
+                    <ol className="list-decimal list-inside text-sm">
+                      {recipe.steps.map((step, k) => (
+                        <li key={k}>{step}</li>
+                      ))}
+                    </ol>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button variant="secondary" onClick={() => setView("input")}>Back</Button>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="plan">
+          <Card>
+            <CardContent className="space-y-4 pt-4">
+              <p className="text-sm text-muted-foreground">Meal Plan Generator Coming Soon!</p>
+              <Input placeholder="Calories per day? (e.g. 1800)" />
+              <Input placeholder="Meals per day? (e.g. 3)" />
+              <Button disabled>Generate Weekly Plan</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
